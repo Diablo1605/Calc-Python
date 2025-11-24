@@ -44,16 +44,16 @@ if ! curl -f http://localhost:5000 > /dev/null 2>&1; then\n\
     exit 1\n\
 fi\n\
 echo "App is running. Starting ZAP baseline scan..."\n\
-zap.sh -cmd -autorun /opt/zap/zap-baseline.py -t http://localhost:5000 -r zap_report.html\n\
+zap.sh -cmd -autorun /opt/zap/zap-baseline.py -t http://localhost:5000 -r /output/zap_report.html\n\
 SCAN_EXIT=$?\n\
 echo "ZAP scan completed with exit code: $SCAN_EXIT"\n\
 if [ $SCAN_EXIT -ne 0 ]; then\n\
     echo "WARNING: ZAP scan failed, but creating empty report for artifact."\n\
-    echo "<html><body><h1>ZAP Scan Failed</h1><p>Check logs for details.</p></body></html>" > zap_report.html\n\
+    echo "<html><body><h1>ZAP Scan Failed</h1><p>Check logs for details.</p></body></html>" > /output/zap_report.html\n\
 fi\n\
 echo "Killing app..."\n\
 kill $APP_PID\n\
-echo "Process complete. Report saved as zap_report.html"\n\
+echo "Process complete. Report saved to /output/zap_report.html"\n\
 ' > /app/run_and_scan.sh && chmod +x /app/run_and_scan.sh
 
 # Default command: Run the app and scan
