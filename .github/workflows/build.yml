@@ -31,6 +31,7 @@ jobs:
       # 4. Run tests with coverage
       - name: Run tests with coverage
         run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
           pytest --cov=./ --cov-report xml --cov-report html
 
       # 5. Upload HTML coverage report as artifact (optional)
