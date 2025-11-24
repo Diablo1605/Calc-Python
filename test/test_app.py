@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from main import app  # Replace 'main' with your app filename if different
+from src.main import app  # Replace 'main' with your app filename if different
 
 client = TestClient(app)
 
