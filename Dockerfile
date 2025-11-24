@@ -9,11 +9,11 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     && rm -rf /var/lib/apt/lists/*
 
-# Install OWASP ZAP using the official script
-RUN wget -q https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz -O /tmp/zap.tar.gz \
+# Install OWASP ZAP using the official download (latest stable: v2.15.0)
+RUN wget -v https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2.15.0_Linux.tar.gz -O /tmp/zap.tar.gz \
     && tar -xzf /tmp/zap.tar.gz -C /opt \
     && rm /tmp/zap.tar.gz \
-    && ln -s /opt/ZAP_2.14.0 /opt/zap
+    && ln -s /opt/ZAP_2.15.0 /opt/zap
 
 # Add ZAP to PATH
 ENV PATH="/opt/zap:$PATH"
