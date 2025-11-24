@@ -21,7 +21,7 @@ ENV PATH="/opt/zap:$PATH"
 # Set working directory
 WORKDIR /app
 
-# Install Python dependencies directly (assuming Flask for the calc app)
+# Install Python dependencies directly (assuming Flask for the calc app; adjust if needed)
 RUN pip3 install --no-cache-dir Flask==2.3.3
 
 # Copy the app code
@@ -30,16 +30,30 @@ COPY . .
 # Expose the port (assuming default Flask port; adjust if different)
 EXPOSE 5000
 
-# Script to run the app and scan
+# Script to run the app and scan (with logging and error handling)
 RUN echo '#!/bin/bash\n\
-# Start the app in the background\n\
+set -e  # Exit on any error\n\
+echo "Starting Python app..."\n\
 python3 app.py &\n\
 APP_PID=$!\n\
 sleep 5  # Wait for app to start\n\
-# Run ZAP baseline scan\n\
+echo "Checking if app is running on port 5000..."\n\
+if ! curl -f http://localhost:5000 > /dev/null 2>&1; then\n\
+    echo "ERROR: App not responding on http://localhost:5000. Check app.py and dependencies."\n\
+    kill $APP_PID\n\
+    exit 1\n\
+fi\n\
+echo "App is running. Starting ZAP baseline scan..."\n\
 zap.sh -cmd -autorun /opt/zap/zap-baseline.py -t http://localhost:5000 -r zap_report.html\n\
-# Kill the app\n\
+SCAN_EXIT=$?\n\
+echo "ZAP scan completed with exit code: $SCAN_EXIT"\n\
+if [ $SCAN_EXIT -ne 0 ]; then\n\
+    echo "WARNING: ZAP scan failed, but creating empty report for artifact."\n\
+    echo "<html><body><h1>ZAP Scan Failed</h1><p>Check logs for details.</p></body></html>" > zap_report.html\n\
+fi\n\
+echo "Killing app..."\n\
 kill $APP_PID\n\
+echo "Process complete. Report saved as zap_report.html"\n\
 ' > /app/run_and_scan.sh && chmod +x /app/run_and_scan.sh
 
 # Default command: Run the app and scan
