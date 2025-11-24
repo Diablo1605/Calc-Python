@@ -3,8 +3,8 @@ name: OWASP ZAP Security Scan
 on:
   push:
     branches:
-      - main  # Adjust to your default branch (e.g., master)
-  workflow_dispatch:  # Allows manual triggering from the Actions tab
+      - main  # Adjust to your default branch
+  workflow_dispatch:  # Allows manual triggering
 
 jobs:
   zap-scan:
@@ -17,23 +17,24 @@ jobs:
       - name: Build Docker image
         run: docker build -t calc-python-zap .
 
-      - name: Run ZAP scan
+      - name: Run ZAP scan and save report
         run: |
           # Create a directory for the report
           mkdir -p zap-reports
           
-          # Run the container and copy the report out
-          docker run --rm -v $(pwd)/zap-reports:/output calc-python-zap cp /app/zap_report.html /output/
+          # Run the container with volume mount to save report directly to host
+          docker run --rm -v $(pwd)/zap-reports:/output calc-python-zap
           
           # Verify the report exists
           if [ ! -f zap-reports/zap_report.html ]; then
-            echo "ZAP report not found. Check the Dockerfile or app startup."
+            echo "ERROR: Report not found. Check Docker logs above for issues."
             exit 1
           fi
+          echo "Report generated successfully."
 
       - name: Upload ZAP report
         uses: actions/upload-artifact@v4
         with:
           name: zap-security-report
           path: zap-reports/zap_report.html
-          retention-days: 30  # Keep the artifact for 30 days
+          retention-days: 30  # Keep for 30 days
