@@ -1,11 +1,22 @@
-# Use OWASP ZAP stable as the base image (Ubuntu-based)
-FROM owasp/zap2docker-stable
+# Use Ubuntu as base (stable and widely available)
+FROM ubuntu:22.04
 
-# Switch to root to install Python
-USER root
+# Install required packages
+RUN apt-get update && apt-get install -y \
+    wget \
+    openjdk-11-jdk \
+    python3 \
+    python3-pip \
+    && rm -rf /var/lib/apt/lists/*
 
-# Install Python and pip
-RUN apt-get update && apt-get install -y python3 python3-pip && rm -rf /var/lib/apt/lists/*
+# Install OWASP ZAP using the official script
+RUN wget -q https://github.com/zaproxy/zaproxy/releases/download/v2.14.0/ZAP_2.14.0_Linux.tar.gz -O /tmp/zap.tar.gz \
+    && tar -xzf /tmp/zap.tar.gz -C /opt \
+    && rm /tmp/zap.tar.gz \
+    && ln -s /opt/ZAP_2.14.0 /opt/zap
+
+# Add ZAP to PATH
+ENV PATH="/opt/zap:$PATH"
 
 # Set working directory
 WORKDIR /app
@@ -17,9 +28,6 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 # Copy the app code
 COPY . .
 
-# Switch back to zap user for security
-USER zap
-
 # Expose the port (assuming default Flask port; adjust if different)
 EXPOSE 5000
 
@@ -30,7 +38,7 @@ python3 app.py &\n\
 APP_PID=$!\n\
 sleep 5  # Wait for app to start\n\
 # Run ZAP baseline scan\n\
-zap-baseline.py -t http://localhost:5000 -r zap_report.html\n\
+zap.sh -cmd -autorun /opt/zap/zap-baseline.py -t http://localhost:5000 -r zap_report.html\n\
 # Kill the app\n\
 kill $APP_PID\n\
 ' > /app/run_and_scan.sh && chmod +x /app/run_and_scan.sh
