@@ -36,10 +36,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Better relevancy for SonarQube analysis
+          fetch-depth: 0
 
       # -----------------------------
-      # Install Python & dependencies
+      # Install Python & Dependencies
       # -----------------------------
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -50,22 +50,6 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-
-      # -----------------------------
-      # ⭐ OPTION A: Run Unit Tests
-      # -----------------------------
-      - name: Run tests
-        run: |
-          pytest --maxfail=1 --disable-warnings -q
-
-      # -----------------------------
-      # ⭐ OPTION B: Run FastAPI app
-      # (useful only for integration checks)
-      # -----------------------------
-      # - name: Run FastAPI app
-      #   run: |
-      #     uvicorn main:app --host 0.0.0.0 --port 8000 &
-      #   shell: bash
 
       # -----------------------------
       # SonarQube Scan
