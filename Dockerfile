@@ -16,9 +16,10 @@ RUN wget -v https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2.1
     && rm /tmp/zap.tar.gz \
     && ln -s /opt/ZAP_2.15.0 /opt/zap
 
-# Download the latest zap-baseline.py script
-RUN wget https://raw.githubusercontent.com/zaproxy/zaproxy/main/scripts/examples/standalone/zap-baseline.py -O /opt/zap/zap-baseline.py \
+# Download compatible zap-baseline.py for 2.15.0
+RUN wget https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/zap-baseline.py -O /opt/zap/zap-baseline.py \
     && chmod +x /opt/zap/zap-baseline.py
+
 
 # Add ZAP to PATH
 ENV PATH="/opt/zap:$PATH"
