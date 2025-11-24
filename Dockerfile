@@ -1,4 +1,4 @@
-# Use Ubuntu as base
+# Base image
 FROM ubuntu:22.04
 
 # Install required packages
