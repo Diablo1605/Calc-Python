@@ -42,3 +42,4 @@ echo "Stopping Python app..."
 kill $APP_PID || true
 
 echo "Process complete. Report saved to /output/zap_report.html"
+
