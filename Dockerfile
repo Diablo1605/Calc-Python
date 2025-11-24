@@ -25,10 +25,10 @@ WORKDIR /app
 # Install Python dependencies
 RUN pip3 install --no-cache-dir Flask==2.3.3
 
-# Copy app code and run script
+# Copy all project files, including src/ folder
 COPY . /app
 
-# Ensure script is executable
+# Ensure run script is executable
 RUN chmod +x /app/run_and_scan.sh
 
 # Expose Flask port
