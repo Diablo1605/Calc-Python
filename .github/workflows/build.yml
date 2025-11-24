@@ -1,41 +1,39 @@
-name: Build
+name: OWASP ZAP Security Scan
 
 on:
   push:
     branches:
-      - main
-  pull_request:
-    types: [opened, synchronize, reopened]
+      - main  # Adjust to your default branch (e.g., master)
+  workflow_dispatch:  # Allows manual triggering from the Actions tab
 
 jobs:
-  sonarqube:
-    name: SonarQube
+  zap-scan:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      # Python Setup
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Build Docker image
+        run: docker build -t calc-python-zap .
 
-      - name: Install Dependencies
+      - name: Run ZAP scan
         run: |
-          pip install fastapi uvicorn pytest pytest-cov httpx
+          # Create a directory for the report
+          mkdir -p zap-reports
+          
+          # Run the container and copy the report out
+          docker run --rm -v $(pwd)/zap-reports:/output calc-python-zap cp /app/zap_report.html /output/
+          
+          # Verify the report exists
+          if [ ! -f zap-reports/zap_report.html ]; then
+            echo "ZAP report not found. Check the Dockerfile or app startup."
+            exit 1
+          fi
 
-      # Run PyTest with coverage
-      - name: Run tests with coverage
-        run: |
-          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
-          pytest --cov=src --cov-report=xml:coverage.xml --cov-branch
-
-      # SonarQube Scan with Python coverage
-      - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@fd88b7d7ccbaefd23d8f36f73b59db7a3d246602
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_SCANNER_OPTS: "-Dsonar.python.coverage.reportPaths=coverage.xml"
+      - name: Upload ZAP report
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-security-report
+          path: zap-reports/zap_report.html
+          retention-days: 30  # Keep the artifact for 30 days
