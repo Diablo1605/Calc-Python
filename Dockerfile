@@ -21,9 +21,8 @@ ENV PATH="/opt/zap:$PATH"
 # Set working directory
 WORKDIR /app
 
-# Copy and install Python dependencies
-COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+# Install Python dependencies directly (assuming Flask for the calc app)
+RUN pip3 install --no-cache-dir Flask==2.3.3
 
 # Copy the app code
 COPY . .
