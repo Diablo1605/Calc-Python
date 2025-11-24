@@ -22,7 +22,7 @@ ENV PATH="/opt/zap:$PATH"
 WORKDIR /app
 
 # Install Flask
-RUN pip3 install --no-cache-dir Flask==2.3.3
+RUN pip3 install --no-cache-dir Flask==2.3.3 fastapi
 
 # Copy project files
 COPY . /app
