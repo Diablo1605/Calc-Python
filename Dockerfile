@@ -28,6 +28,10 @@ RUN pip3 install --no-cache-dir Flask==2.3.3
 # Copy project files (including src/ and tools/)
 COPY . /app
 
+# Copy baseline script into ZAP folder
+RUN mkdir -p /opt/zap
+COPY tools/zap-baseline.py /opt/zap/zap-baseline.py
+
 # Make scripts executable
 RUN chmod +x /app/run_and_scan.sh /opt/zap/zap-baseline.py
 
