@@ -16,11 +16,6 @@ RUN wget -v https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2.1
     && rm /tmp/zap.tar.gz \
     && ln -s /opt/ZAP_2.15.0 /opt/zap
 
-# Download compatible zap-baseline.py for 2.15.0
-RUN wget https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/zap-baseline.py -O /opt/zap/zap-baseline.py \
-    && chmod +x /opt/zap/zap-baseline.py
-
-
 # Add ZAP to PATH
 ENV PATH="/opt/zap:$PATH"
 
@@ -28,13 +23,13 @@ ENV PATH="/opt/zap:$PATH"
 WORKDIR /app
 
 # Install Python dependencies
-RUN pip3 install --no-cache-dir Flask==2.3.3 fastapi
+RUN pip3 install --no-cache-dir Flask==2.3.3
 
-# Copy project files (including src/)
+# Copy project files (including src/ and tools/)
 COPY . /app
 
-# Make script executable
-RUN chmod +x /app/run_and_scan.sh
+# Make scripts executable
+RUN chmod +x /app/run_and_scan.sh /opt/zap/zap-baseline.py
 
 # Expose Flask port
 EXPOSE 5000
