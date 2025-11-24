@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-# Detect Python app automatically
-APP_FILE=$(ls *.py | head -n 1)
+# Find first Python file recursively
+APP_FILE=$(find . -name "*.py" | head -n 1)
 
 if [ -z "$APP_FILE" ]; then
   echo "ERROR: No Python file found in /app"
@@ -13,7 +13,7 @@ echo "Starting Python app: $APP_FILE..."
 python3 "$APP_FILE" &
 APP_PID=$!
 
-# Wait for the app to start (max 15 seconds)
+# Wait for app to be ready
 echo "Waiting for app to start on port 5000..."
 for i in {1..15}; do
   if curl -f http://localhost:5000 > /dev/null 2>&1; then
