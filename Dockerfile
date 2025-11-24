@@ -19,20 +19,17 @@ RUN wget -v https://github.com/zaproxy/zaproxy/releases/download/v2.15.0/ZAP_2.1
 # Add ZAP to PATH
 ENV PATH="/opt/zap:$PATH"
 
-# Set working directory
 WORKDIR /app
 
-# Install Python dependencies
-RUN pip3 install --no-cache-dir Flask==2.3.3 fastapi
+# Install Flask
+RUN pip3 install --no-cache-dir Flask==2.3.3
 
-# Copy all project files, including src/ folder
+# Copy project files
 COPY . /app
 
-# Ensure run script is executable
+# Make script executable
 RUN chmod +x /app/run_and_scan.sh
 
-# Expose Flask port
 EXPOSE 5000
 
-# Default command
 CMD ["/app/run_and_scan.sh"]
