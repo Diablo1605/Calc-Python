@@ -23,7 +23,7 @@ ENV PATH="/opt/zap:$PATH"
 WORKDIR /app
 
 # Install Python dependencies
-RUN pip3 install --no-cache-dir Flask==2.3.3
+RUN pip3 install --no-cache-dir Flask==2.3.3 fastapi
 
 # Copy all project files, including src/ folder
 COPY . /app
